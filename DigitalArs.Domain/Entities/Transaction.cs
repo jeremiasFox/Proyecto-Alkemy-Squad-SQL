@@ -1,4 +1,4 @@
-namespace DigitalArs.API.Models
+namespace DigitalArs.Domain.Entities
 {
     // Representa cada movimiento de plata del banco
     public class Transaction

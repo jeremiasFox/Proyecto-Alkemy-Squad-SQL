@@ -1,4 +1,4 @@
-namespace DigitalArs.API.Models
+namespace DigitalArs.Domain.Entities
 {
     public class User
     {
