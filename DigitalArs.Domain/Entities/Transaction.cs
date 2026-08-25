@@ -8,7 +8,14 @@ namespace DigitalArs.Domain.Entities
         public DateTime Date { get; set; } // Cuando se hizo
         public int FromAccountId { get; set; } // De que cuenta sale
         public int ToAccountId { get; set; } // A que cuenta entra
-        public int TransactionTypeId { get; set; } // Que tipo es (deposito, retiro, etc)
-        public TransactionType TransactionType { get; set; } = null!;
+
+        // Cuenta desde la que se realiza la transacción.
+        public Account FromAccount { get; set; } = null!;
+
+        // Cuenta a la que se envía el dinero.
+        public Account ToAccount { get; set; } = null!;
+
+        // Tipo de transacción: depósito, transferencia de entrada o transferencia de salida.
+        public TransactionType TransactionType { get; set; } // Que tipo es (deposito, retiro, etc)
     }
 }

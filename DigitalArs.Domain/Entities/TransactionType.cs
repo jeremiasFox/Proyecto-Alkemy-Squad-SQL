@@ -1,9 +1,10 @@
 namespace DigitalArs.Domain.Entities
 {
-    public class TransactionType
+    public enum TransactionType
     {
-        public int Id { get; set; }
-        public string Name { get; set; } = string.Empty;
+        Deposit,
+        TransferIn,
+        TransferOut
     }
 }
 // ALmacena cada movimiento de la cuenta

@@ -7,7 +7,12 @@ namespace DigitalArs.Domain.Entities
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public int RoleId { get; set; }
+
+        // Rol asignado al usuario.
         public Role Role { get; set; } = null!;
+
+        // Cuenta bancaria asociada al usuario.
+        public Account Account { get; set; } = null!;
     }
 }
 
