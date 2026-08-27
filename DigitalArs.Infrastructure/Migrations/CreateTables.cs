@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-#nullable disable
+
 
 namespace DigitalArs.Infrastructure.Migrations
 {
@@ -128,7 +128,7 @@ namespace DigitalArs.Infrastructure.Migrations
                 column: "RoleId");
         }
 
-        /// <inheritdoc />
+        
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
