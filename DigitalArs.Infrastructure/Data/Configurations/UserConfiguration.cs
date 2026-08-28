@@ -77,5 +77,34 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .WithOne(a => a.User)
             .HasForeignKey<Account>(a => a.UserId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        // Datos iniciales de usuarios de prueba.
+        builder.HasData(
+            new User
+            {
+                Id = 1,
+                Name = "Admin",
+                Email = "admin@digitalars.com",
+                Password = "$2a$11$xmyuGpto0QJ8OOurvxKshObliC8zGPQ2uYP1xXltbQv8k.Ansgg5S",
+                RoleId = 1
+            },
+            new User
+            {
+                Id = 2,
+                Name = "User1",
+                Email = "user1@digitalars.com",
+                Password = "$2a$11$p1UYTEKIRVPO3kh15hpFCOxK7DeNAd9uzdGKOujq9S33qs0qwXHce",
+                RoleId = 2
+            },
+            new User
+            {
+                Id = 3,
+                Name = "User2",
+                Email = "user2@digitalars.com",
+                Password = "$2a$11$QedlI7cVp7uZ0k.tyCCJ/.a/9TkcCX2FjvXJHU6ebVg5fvYlCWB0i",
+                RoleId = 2
+            }
+        );
+
     }
 }

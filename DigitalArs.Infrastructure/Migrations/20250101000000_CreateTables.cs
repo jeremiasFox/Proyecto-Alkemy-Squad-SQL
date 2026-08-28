@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DigitalArs.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateTables : Migration
+    public partial class CreateTables20250101000000 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -128,7 +128,7 @@ namespace DigitalArs.Infrastructure.Migrations
                 column: "RoleId");
         }
 
-        
+
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

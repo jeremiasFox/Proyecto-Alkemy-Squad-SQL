@@ -42,5 +42,20 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
             .WithOne(u => u.Role)
             .HasForeignKey(u => u.RoleId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        // Datos iniciales de roles.
+        builder.HasData(
+            new Role
+            {
+                Id = 1,
+                Name = "Admin"
+            },
+            new Role
+            {
+                Id = 2,
+                Name = "User"
+            }
+        );
+
     }
 }

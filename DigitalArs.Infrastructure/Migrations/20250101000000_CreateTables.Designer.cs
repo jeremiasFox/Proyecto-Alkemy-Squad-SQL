@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DigitalArs.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("CreateTables")]
-    public partial class CreateTables : Migration
+    [Migration("20250101000000_CreateTables")]
+    public partial class CreateTables20250101000000 : Migration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -62,5 +62,28 @@ public class AccountConfiguration : IEntityTypeConfiguration<Account>
             .WithOne(t => t.ToAccount)
             .HasForeignKey(t => t.ToAccountId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        // Datos iniciales de cuentas asociadas a los usuarios de prueba.
+        builder.HasData(
+            new Account
+            {
+                Id = 1,
+                Balance = 10000m,
+                UserId = 1
+            },
+            new Account
+            {
+                Id = 2,
+                Balance = 5000m,
+                UserId = 2
+            },
+            new Account
+            {
+                Id = 3,
+                Balance = 7500m,
+                UserId = 3
+            }
+        );
+
     }
 }
