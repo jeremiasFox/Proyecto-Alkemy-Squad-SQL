@@ -1,8 +1,4 @@
-# pruebagit
-
-test git
-
-# Proyecto Alkemy Squad SQL
+# Proyecto Alkemy Squad SQL NET
 
 Prueba de repositorio.
 
@@ -22,3 +18,9 @@ Prueba de repositorio.
 
 - Email: user2@digitalars.com
 - Contraseña: User123!
+
+## Technical Documentation
+
+- [Data Model](docs/data-model/data-model.md)
+- [LINQ Queries](docs/linq-queries/linq-queries.md)
+- [Optimization Report](docs/optimization/optimization-report.md)
