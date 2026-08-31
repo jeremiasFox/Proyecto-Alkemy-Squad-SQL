@@ -12,6 +12,7 @@ public class MappingProfile : Profile
         CreateMap<User, UserResponseDto>()
             .ForMember(d => d.RoleName, opt => opt.MapFrom(s => s.Role.Name));
 
-        CreateMap<UserCreateRequestDto, User>();
+        CreateMap<UserCreateRequestDto, User>()
+    .ForMember(d => d.Password, opt => opt.Ignore());
     }
 }

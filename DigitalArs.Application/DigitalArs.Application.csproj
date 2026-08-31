@@ -2,7 +2,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DigitalArs.Domain\DigitalArs.Domain.csproj" />
-    <ProjectReference Include="..\DigitalArs.Infrastructure\DigitalArs.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

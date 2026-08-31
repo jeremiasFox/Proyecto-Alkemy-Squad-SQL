@@ -4,6 +4,7 @@ using DigitalArs.Domain.Entities;
 using DigitalArs.Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using DigitalArs.Application.Common.Interfaces;
 
 namespace DigitalArs.API.Controllers;
 
@@ -13,11 +14,16 @@ public class UsersController : ControllerBase
 {
     private readonly AppDbContext _context;
     private readonly IMapper _mapper;
+    private readonly IPasswordHasher _passwordHasher;
 
-    public UsersController(AppDbContext context, IMapper mapper)
+    public UsersController(
+        AppDbContext context,
+        IMapper mapper,
+        IPasswordHasher passwordHasher)
     {
         _context = context;
         _mapper = mapper;
+        _passwordHasher = passwordHasher;
     }
 
     [HttpPost]
@@ -39,6 +45,8 @@ public class UsersController : ControllerBase
         }
 
         var user = _mapper.Map<User>(dto);
+        user.Password = _passwordHasher.Hash(dto.Password);
+
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
 
