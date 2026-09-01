@@ -27,6 +27,14 @@ public class AccountConfiguration : IEntityTypeConfiguration<Account>
             .HasColumnType("decimal(18,2)")
             .HasDefaultValue(0m);
 
+        // Guardamos la fecha y hora en la que se creó la cuenta.
+        //
+        // Usamos datetime2 para almacenar la fecha y hora con buena precisión,
+        // siguiendo el mismo criterio utilizado para Transaction.Date.
+        builder.Property(a => a.CreatedAt)
+    .IsRequired()
+    .HasColumnType("datetime2");
+
         // Creamos un índice sobre UserId porque vamos a consultar frecuentemente la cuenta asociada a un usuario.     
         builder.HasIndex(a => a.UserId)
             .HasDatabaseName("IX_Accounts_UserId");
@@ -69,19 +77,22 @@ public class AccountConfiguration : IEntityTypeConfiguration<Account>
             {
                 Id = 1,
                 Balance = 10000m,
-                UserId = 1
+                UserId = 1,
+                CreatedAt = new DateTime(2026, 8, 1)
             },
             new Account
             {
                 Id = 2,
                 Balance = 5000m,
-                UserId = 2
+                UserId = 2,
+                CreatedAt = new DateTime(2026, 8, 1)
             },
             new Account
             {
                 Id = 3,
                 Balance = 7500m,
-                UserId = 3
+                UserId = 3,
+                CreatedAt = new DateTime(2026, 8, 1)
             }
         );
 
