@@ -1,15 +1,18 @@
 ﻿using AutoMapper;
+using DigitalArs.Application.Common.Interfaces;
 using DigitalArs.Application.DTOs.User;
+using DigitalArs.API.Helpers;
 using DigitalArs.Domain.Entities;
 using DigitalArs.Infrastructure.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using DigitalArs.Application.Common.Interfaces;
 
 namespace DigitalArs.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "Admin")]
 public class UsersController : ControllerBase
 {
     private readonly AppDbContext _context;
@@ -40,9 +43,7 @@ public class UsersController : ControllerBase
 
         var roleExists = await _context.Roles.AnyAsync(r => r.Id == dto.RoleId);
         if (!roleExists)
-        {
             return BadRequest(new { Errors = new[] { $"El RoleId {dto.RoleId} no existe" } });
-        }
 
         var user = _mapper.Map<User>(dto);
         user.Password = _passwordHasher.Hash(dto.Password);

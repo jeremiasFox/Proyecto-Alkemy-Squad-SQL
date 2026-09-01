@@ -34,6 +34,22 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey         = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
             ClockSkew                = TimeSpan.Zero
         };
+        options.Events = new Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents
+        {
+            OnChallenge = ctx =>
+            {
+                ctx.HandleResponse();
+                ctx.Response.StatusCode  = 401;
+                ctx.Response.ContentType = "application/json";
+                return ctx.Response.WriteAsync("{\"statusCode\":401,\"message\":\"No autenticado. Incluya un token JWT válido.\",\"errors\":[],\"traceId\":\"\"}");
+            },
+            OnForbidden = ctx =>
+            {
+                ctx.Response.StatusCode  = 403;
+                ctx.Response.ContentType = "application/json";
+                return ctx.Response.WriteAsync("{\"statusCode\":403,\"message\":\"No tiene permisos para realizar esta operación.\",\"errors\":[],\"traceId\":\"\"}");
+            }
+        };
     });
 
 builder.Services.AddAuthorization();

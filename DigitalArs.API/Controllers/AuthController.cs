@@ -1,19 +1,16 @@
 using DigitalArs.Application.Common.Interfaces;
-
 using DigitalArs.Application.DTOs.Auth;
-
 using DigitalArs.Application.Exceptions;
-
 using DigitalArs.Infrastructure.Data;
-
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
 using Microsoft.EntityFrameworkCore;
 
 namespace DigitalArs.API.Controllers;
 
 [ApiController]
 [Route("api/auth")]
+[Authorize]
 public class AuthController : ControllerBase
 {
     private readonly AppDbContext _context;
@@ -30,6 +27,7 @@ public class AuthController : ControllerBase
         _jwtService     = jwtService;
     }
 
+    [AllowAnonymous]
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequestDto dto)
     {
