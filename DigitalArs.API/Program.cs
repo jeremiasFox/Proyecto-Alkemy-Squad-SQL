@@ -7,16 +7,28 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using DigitalArs.Infrastructure.Extensions;
+using DigitalArs.Application.Common.Settings;
+using DigitalArs.Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // ── Base de datos ─────────────────────────────────────────────────────────────
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+//builder.Services.AddDbContext<AppDbContext>(options =>
+//    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// ── Infraestructura ──────────────────────────────────────────────────────────
+builder.Services.AddInfrastructure(builder.Configuration);
+
+// Configuración del límite máximo permitido para los depósitos.
+// El valor se obtiene desde la sección DepositSettings de la configuración.
+builder.Services.Configure<DepositSettings>(
+    builder.Configuration.GetSection("DepositSettings"));
 
 // ── Seguridad ─────────────────────────────────────────────────────────────────
 builder.Services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
 builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
 
 var jwtSecret = builder.Configuration["JwtSettings:SecretKey"]
     ?? throw new InvalidOperationException("JwtSettings:SecretKey no está configurada.");

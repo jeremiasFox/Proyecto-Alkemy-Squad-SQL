@@ -39,17 +39,7 @@ public static class InfrastructureServiceExtensions
         // normalmente desde appsettings.json.
         services.AddDbContext<AppDbContext>(options =>
             options.UseSqlServer(
-                configuration.GetConnectionString("DefaultConnection"),
-                sqlOptions =>
-                {
-                    // Si SQL Server tiene un fallo temporal, por ejemplo
-                    // un corte de red momentáneo, EF Core puede reintentar
-                    // la operación automáticamente.
-                    sqlOptions.EnableRetryOnFailure(
-                        maxRetryCount: 3,
-                        maxRetryDelay: TimeSpan.FromSeconds(5),
-                        errorNumbersToAdd: null);
-                }));
+                configuration.GetConnectionString("DefaultConnection")));
 
         // Registramos la implementación de IUnitOfWork.
         //
