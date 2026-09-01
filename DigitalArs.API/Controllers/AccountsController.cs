@@ -4,6 +4,7 @@ using DigitalArs.Infrastructure.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using DigitalArs.Application.Common.Interfaces;
 
 namespace DigitalArs.API.Controllers;
 
@@ -13,9 +14,14 @@ public class AccountsController : ControllerBase
 {
     private readonly AppDbContext _context;
 
-    public AccountsController(AppDbContext context)
+    private readonly IAccountService _accountService;
+
+    public AccountsController(
+    AppDbContext context,
+    IAccountService accountService)
     {
         _context = context;
+        _accountService = accountService;
     }
 
     [HttpGet("me")]
@@ -41,6 +47,22 @@ public class AccountsController : ControllerBase
         }
 
         return Ok(account);
+    }
+
+    [HttpPost("deposit")]
+    [Authorize]
+    public async Task<IActionResult> Deposit(
+    [FromBody] DepositRequestDto request,
+    CancellationToken cancellationToken)
+    {
+        var userId = User.GetUserId();
+
+        var response = await _accountService.DepositAsync(
+            userId,
+            request,
+            cancellationToken);
+
+        return Ok(response);
     }
 
     [HttpGet("{id:int}")]
