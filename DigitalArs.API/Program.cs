@@ -1,16 +1,61 @@
+using System.Text;
 using DigitalArs.API.Middleware;
-using DigitalArs.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
 using DigitalArs.Application.Common.Interfaces;
+using DigitalArs.Infrastructure.Data;
 using DigitalArs.Infrastructure.Security;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// ── Base de datos ─────────────────────────────────────────────────────────────
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// ── Seguridad ─────────────────────────────────────────────────────────────────
 builder.Services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
+builder.Services.AddScoped<IJwtService, JwtService>();
 
+var jwtSecret = builder.Configuration["JwtSettings:SecretKey"]
+    ?? throw new InvalidOperationException("JwtSettings:SecretKey no está configurada.");
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+            ValidAudience = builder.Configuration["JwtSettings:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
+            ClockSkew = TimeSpan.Zero
+        };
+        options.Events = new Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents
+        {
+            OnChallenge = ctx =>
+            {
+                ctx.HandleResponse();
+                ctx.Response.StatusCode = 401;
+                ctx.Response.ContentType = "application/json";
+                return ctx.Response.WriteAsync("{\"statusCode\":401,\"message\":\"No autenticado. Incluya un token JWT válido.\",\"errors\":[],\"traceId\":\"\"}");
+            },
+            OnForbidden = ctx =>
+            {
+                ctx.Response.StatusCode = 403;
+                ctx.Response.ContentType = "application/json";
+                return ctx.Response.WriteAsync("{\"statusCode\":403,\"message\":\"No tiene permisos para realizar esta operación.\",\"errors\":[],\"traceId\":\"\"}");
+            }
+        };
+    });
+
+builder.Services.AddAuthorization();
+
+// ── Excepciones ───────────────────────────────────────────────────────────────
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
@@ -27,16 +72,36 @@ builder.Services.AddCors(options =>
     });
 });
 
+// ── Controllers / Swagger ─────────────────────────────────────────────────────
 builder.Services.AddControllers();
 builder.Services.Configure<Microsoft.AspNetCore.Mvc.ApiBehaviorOptions>(options =>
 {
     options.SuppressModelStateInvalidFilter = true;
 });
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Ingrese el token JWT. Ejemplo: Bearer {token}"
+    });
+
+    options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+    {
+        [new OpenApiSecuritySchemeReference("Bearer", document)] = []
+    });
+});
+
 builder.Services.AddOpenApi();
 builder.Services.AddAutoMapper(cfg => { }, typeof(DigitalArs.Application.Mappings.MappingProfile));
 
+// ─────────────────────────────────────────────────────────────────────────────
 var app = builder.Build();
 
 app.UseExceptionHandler();
@@ -50,5 +115,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("AllowFrontend"); // Va antes de Authorization como pide la HU
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 app.Run();
