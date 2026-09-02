@@ -36,4 +36,14 @@ public class TransactionsController : ControllerBase
         var result = await _transactionService.TransferAsync(userId, request, cancellationToken);
         return Ok(result);
     }
+
+    [HttpGet("me")]
+    public async Task<IActionResult> GetMyTransactions(
+        [FromQuery] TransactionFilterDto filter,
+        CancellationToken cancellationToken)
+    {
+        var userId = User.GetUserId();
+        var result = await _transactionService.GetMyTransactionsAsync(userId, filter, cancellationToken);
+        return Ok(result);
+    }
 }
