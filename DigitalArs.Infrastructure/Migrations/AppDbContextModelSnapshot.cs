@@ -185,7 +185,7 @@ namespace DigitalArs.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            Email = "admin@digitalars.com",
+                            Email = "git statusadmin@digitalars.com",
                             IsActive = true,
                             Name = "Admin",
                             Password = "$2a$11$xmyuGpto0QJ8OOurvxKshObliC8zGPQ2uYP1xXltbQv8k.Ansgg5S",
