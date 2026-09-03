@@ -2,27 +2,26 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./components/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import LoginForm from "./components/LoginForm";
+import Dashboard from "./pages/Dashboard";
 
-// Placeholders hasta que se implementen las pantallas reales
-function Dashboard() {
-  return <div>Dashboard usuario</div>;
-}
 function AdminPanel() {
   return <div>Panel admin</div>;
 }
 
 function App() {
   return (
+    // Provee la autenticacion a toda la app
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          {/* Ruta pública */}
+          {/* Ruta pública - Login */}
           <Route path="/login" element={<LoginForm />} />
 
-          {/* Ruta para usuarios comunes */}
+          {/* Ruta para usuarios comunes - Usa MI Dashboard */}
           <Route
             path="/dashboard"
             element={
+              // Solo deja entrar si tiene rol User o Admin
               <ProtectedRoute allowedRoles={["User", "Admin"]}>
                 <Dashboard />
               </ProtectedRoute>
@@ -39,7 +38,7 @@ function App() {
             }
           />
 
-          {/* Redirigir raíz al login */}
+          {/* Si entra a "/" o a una ruta que no existe, lo mando al login */}
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
