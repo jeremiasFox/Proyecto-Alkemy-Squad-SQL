@@ -1,10 +1,11 @@
 using DigitalArs.Domain.Entities;
 using DigitalArs.Infrastructure.Data.Configurations;
+using DigitalArs.Application.Common.DTOs.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace DigitalArs.Infrastructure.Data;
 
-public class AppDbContext : DbContext
+public class AppDbContext : DbContext, IAppDbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 

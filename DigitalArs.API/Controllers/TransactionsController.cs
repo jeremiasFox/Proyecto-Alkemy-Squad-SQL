@@ -19,6 +19,7 @@ public class TransactionsController : ControllerBase
         _transactionService = transactionService;
     }
 
+    // Endpoint para realizar transferencias entre cuentas propias
     [HttpPost("transfer")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -32,8 +33,8 @@ public class TransactionsController : ControllerBase
         if (!ModelState.IsValid)
         {
             var errors = ModelState.Values
-              .SelectMany(v => v.Errors)
-              .Select(e => e.ErrorMessage);
+             .SelectMany(v => v.Errors)
+             .Select(e => e.ErrorMessage);
             throw new ValidationException(errors);
         }
 
@@ -43,6 +44,21 @@ public class TransactionsController : ControllerBase
         // Delegamos la lógica de negocio al servicio de transacciones
         // para realizar la transferencia entre cuentas.
         var result = await _transactionService.TransferAsync(userId, request, cancellationToken);
+        return Ok(result);
+    }
+
+    // Endpoint para obtener el historial de transacciones del usuario logueado
+    // con soporte para filtros y paginación.
+    [HttpGet("me")]
+    public async Task<IActionResult> GetMyTransactions(
+        [FromQuery] TransactionFilterDto filter,
+        CancellationToken cancellationToken)
+    {
+        // Obtenemos el ID del usuario autenticado.
+        var userId = User.GetUserId();
+
+        // Consultamos las transacciones aplicando los filtros recibidos.
+        var result = await _transactionService.GetMyTransactionsAsync(userId, filter, cancellationToken);
         return Ok(result);
     }
 }
