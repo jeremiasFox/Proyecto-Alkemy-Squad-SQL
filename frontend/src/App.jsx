@@ -3,6 +3,7 @@ import { AuthProvider } from "./components/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import LoginForm from "./components/LoginForm";
 import Dashboard from "./pages/Dashboard";
+import Deposit from "./pages/Deposit"; // <-- AGREGADO
 
 function AdminPanel() {
   return <div>Panel admin</div>;
@@ -24,6 +25,16 @@ function App() {
               // Solo deja entrar si tiene rol User o Admin
               <ProtectedRoute allowedRoles={["User", "Admin"]}>
                 <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* TAREA DE HOY - Ruta de Deposito */}
+          <Route
+            path="/deposit"
+            element={
+              <ProtectedRoute allowedRoles={["User", "Admin"]}>
+                <Deposit />
               </ProtectedRoute>
             }
           />
