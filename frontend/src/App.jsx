@@ -3,7 +3,8 @@ import { AuthProvider } from "./components/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import LoginForm from "./components/LoginForm";
 import Dashboard from "./pages/Dashboard";
-import Deposit from "./pages/Deposit"; // <-- AGREGADO
+import Deposit from "./pages/Deposit";
+import Transfer from "./pages/Transfer";
 
 function AdminPanel() {
   return <div>Panel admin</div>;
@@ -35,6 +36,16 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={["User", "Admin"]}>
                 <Deposit />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Ruta de Transferencia */}
+          <Route
+            path="/transfer"
+            element={
+              <ProtectedRoute allowedRoles={["User", "Admin"]}>
+                <Transfer />
               </ProtectedRoute>
             }
           />
