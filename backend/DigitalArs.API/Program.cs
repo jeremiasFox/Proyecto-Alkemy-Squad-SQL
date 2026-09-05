@@ -32,6 +32,7 @@ builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<IAppDbContext>(sp => sp.GetRequiredService<AppDbContext>());
+builder.Services.AddScoped<DigitalArs.Application.Interfaces.IUserService, UserService>();
 
 var jwtSecret = builder.Configuration["JwtSettings:SecretKey"]
     ?? throw new InvalidOperationException("JwtSettings:SecretKey no está configurada.");

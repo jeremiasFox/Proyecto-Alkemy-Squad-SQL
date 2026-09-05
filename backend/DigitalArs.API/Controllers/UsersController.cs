@@ -1,12 +1,8 @@
-﻿using AutoMapper;
-using DigitalArs.Application.Common.Interfaces;
-using DigitalArs.Application.DTOs.User;
-using DigitalArs.API.Helpers;
-using DigitalArs.Domain.Entities;
-using DigitalArs.Infrastructure.Data;
+﻿using DigitalArs.Application.DTOs.User;
+using DigitalArs.Application.Exceptions;
+using DigitalArs.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace DigitalArs.API.Controllers;
 
@@ -15,43 +11,72 @@ namespace DigitalArs.API.Controllers;
 [Authorize(Roles = "Admin")]
 public class UsersController : ControllerBase
 {
-    private readonly AppDbContext _context;
-    private readonly IMapper _mapper;
-    private readonly IPasswordHasher _passwordHasher;
+    private readonly IUserService _userService;
 
-    public UsersController(
-        AppDbContext context,
-        IMapper mapper,
-        IPasswordHasher passwordHasher)
+    public UsersController(IUserService userService)
     {
-        _context = context;
-        _mapper = mapper;
-        _passwordHasher = passwordHasher;
+        _userService = userService;
     }
 
+    // GET /api/users?name=&email=&roleId=&isActive=&pageNumber=1&pageSize=10
+    [HttpGet]
+    public async Task<IActionResult> GetAll([FromQuery] UserFilterDto filter)
+    {
+        var result = await _userService.GetAllAsync(filter);
+        return Ok(result);
+    }
+
+    // GET /api/users/{id}
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        var user = await _userService.GetByIdAsync(id);
+        if (user is null)
+            throw new NotFoundException("Usuario", id);
+        return Ok(user);
+    }
+
+    // POST /api/users
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] UserCreateRequestDto dto)
     {
         if (!ModelState.IsValid)
         {
             var errors = ModelState.Values
-              .SelectMany(v => v.Errors)
-              .Select(e => e.ErrorMessage)
-              .ToList();
-            return BadRequest(new { Errors = errors });
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage);
+            throw new ValidationException(errors);
         }
 
-        var roleExists = await _context.Roles.AnyAsync(r => r.Id == dto.RoleId);
-        if (!roleExists)
-            return BadRequest(new { Errors = new[] { $"El RoleId {dto.RoleId} no existe" } });
+        var user = await _userService.CreateAsync(dto);
+        return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);
+    }
 
-        var user = _mapper.Map<User>(dto);
-        user.Password = _passwordHasher.Hash(dto.Password);
+    // PUT /api/users/{id}
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> Update(int id, [FromBody] UserUpdateRequestDto dto)
+    {
+        if (!ModelState.IsValid)
+        {
+            var errors = ModelState.Values
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage);
+            throw new ValidationException(errors);
+        }
 
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
+        var user = await _userService.UpdateAsync(id, dto);
+        if (user is null)
+            throw new NotFoundException("Usuario", id);
+        return Ok(user);
+    }
 
-        var response = _mapper.Map<UserResponseDto>(user);
-        return CreatedAtAction(nameof(Create), new { id = user.Id }, response);
+    // DELETE /api/users/{id}  → baja lógica (IsActive = false)
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var deleted = await _userService.DeleteAsync(id);
+        if (!deleted)
+            throw new NotFoundException("Usuario", id);
+        return NoContent();
     }
 }
