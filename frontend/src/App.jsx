@@ -5,6 +5,8 @@ import LoginForm from "./components/LoginForm";
 import Dashboard from "./pages/Dashboard";
 import Deposit from "./pages/Deposit";
 import Transfer from "./pages/Transfer";
+import NotFound from "./pages/NotFound";
+import Layout from "./components/Layout";
 
 function AdminPanel() {
   return <div>Panel admin</div>;
@@ -21,14 +23,14 @@ function App() {
 
           {/* Ruta para usuarios comunes - Usa MI Dashboard */}
           <Route
-            path="/dashboard"
-            element={
-              // Solo deja entrar si tiene rol User o Admin
-              <ProtectedRoute allowedRoles={["User", "Admin"]}>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
+  element={
+    <ProtectedRoute allowedRoles={["User", "Admin"]}>
+      <Layout />
+    </ProtectedRoute>
+  }
+>
+  <Route path="/dashboard" element={<Dashboard />} />
+</Route>
 
           {/* TAREA DE HOY - Ruta de Deposito */}
           <Route
@@ -51,18 +53,19 @@ function App() {
           />
 
           {/* Ruta exclusiva para admins */}
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute allowedRoles={["Admin"]}>
-                <AdminPanel />
-              </ProtectedRoute>
-            }
-          />
+<Route
+  element={
+    <ProtectedRoute allowedRoles={["Admin"]}>
+      <Layout />
+    </ProtectedRoute>
+  }
+>
+  <Route path="/admin" element={<AdminPanel />} />
+</Route>
 
           {/* Si entra a "/" o a una ruta que no existe, lo mando al login */}
           <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route path="*" element={<Navigate to="/login" replace />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

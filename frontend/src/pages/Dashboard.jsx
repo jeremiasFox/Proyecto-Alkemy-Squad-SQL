@@ -91,7 +91,7 @@ export default function Dashboard() {
                 {t.type} - {t.counterparty || "sin detalle"}
               </span>
               <span>
-                {t.amount} - {new Date(t.createdAt).toLocaleDateString()}
+                {t.amount} - {new Date(t.date).toLocaleDateString()}
               </span>
             </li>
           ))

@@ -51,7 +51,7 @@ export default function LoginForm() {
 
     setLoading(true);
     try {
-      const { data } = await api.post("/auth/login", form);
+      const { data } = await api.post("/api/auth/login", form);
       login(data.token);
 
       // Redirigir según el rol que viene del token decodificado

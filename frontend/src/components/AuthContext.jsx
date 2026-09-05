@@ -13,7 +13,7 @@ export function AuthProvider({ children }) {
       return {
         id: decoded.sub,
         email: decoded.email,
-        role: decoded.role,
+        role: decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'],
       }
     } catch {
       return null
@@ -28,7 +28,7 @@ export function AuthProvider({ children }) {
       setUser({
         id: decoded.sub,
         email: decoded.email,
-        role: decoded.role,
+        role: decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'],
       })
     } catch {
       setUser(null)
