@@ -1,53 +1,58 @@
-import { createContext, useContext, useState, useEffect } from 'react'
-import { jwtDecode } from 'jwt-decode'
+import { createContext, useContext, useState, useEffect } from "react";
+import { jwtDecode } from "jwt-decode";
 
-const AuthContext = createContext(null)
+const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [token, setToken] = useState(() => localStorage.getItem('token'))
+  const [token, setToken] = useState(() => localStorage.getItem("token"));
   const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('token')
-    if (!saved) return null
+    const saved = localStorage.getItem("token");
+    if (!saved) return null;
     try {
-      const decoded = jwtDecode(saved)
+      const decoded = jwtDecode(saved);
       return {
         id: decoded.sub,
         email: decoded.email,
-        role: decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'],
-      }
+        role: decoded[
+          "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+        ],
+      };
     } catch {
-      return null
+      return null;
     }
-  })
+  });
 
   const login = (newToken) => {
-    localStorage.setItem('token', newToken)
-    setToken(newToken)
+    localStorage.setItem("token", newToken);
+    setToken(newToken);
     try {
-      const decoded = jwtDecode(newToken)
+      const decoded = jwtDecode(newToken);
       setUser({
         id: decoded.sub,
         email: decoded.email,
-        role: decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'],
-      })
+        role: decoded[
+          "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+        ],
+      });
     } catch {
-      setUser(null)
+      setUser(null);
     }
-  }
+  };
 
   const logout = () => {
-    localStorage.removeItem('token')
-    setToken(null)
-    setUser(null)
-  }
+    localStorage.removeItem("token");
+    setToken(null);
+    setUser(null);
+    window.location.reload();
+  };
 
   return (
     <AuthContext.Provider value={{ user, token, login, logout }}>
       {children}
     </AuthContext.Provider>
-  )
+  );
 }
 
 export function useAuth() {
-  return useContext(AuthContext)
+  return useContext(AuthContext);
 }
